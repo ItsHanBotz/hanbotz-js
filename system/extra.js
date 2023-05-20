@@ -32,6 +32,19 @@ const PhoneNumber = require('awesome-phonenumber')
 const Exif = new (require('./exif'))
 const Func = new (require('./functions'))
 
+const store = makeInMemoryStore({
+   logger: pino().child({
+      level: 'silent',
+      stream: 'store'
+   })
+})
+
+// don't rename "neoxr_store.json" to avoid error!!
+store.readFromFile('./session/neoxr_store.json')
+setInterval(() => {
+   store.writeToFile('./session/neoxr_store.json')
+}, 10_000)
+
 Socket = (...args) => {
    let client = makeWASocket(...args)
    Object.defineProperty(client, 'name', {
@@ -187,7 +200,7 @@ Socket = (...args) => {
 
    client.downloadMediaMessage = async (message) => {
       let mime = (message.msg || message).mimetype || ''
-      let messageType = message.mtype ? message.mtype.replace(/Message/gi, '') : mime.split('/')[0]
+      let messageType = message.mtype ? message.mtype.replace(/Message|WithCaption/gi, '') : mime.split('/')[0]
       const stream = await downloadContentFromMessage(message, messageType)
       let buffer = Buffer.from([])
       for await (const chunk of stream) {
@@ -262,7 +275,7 @@ Socket = (...args) => {
             ...options
          }, {
             quoted
-         })
+         }).then(() => fs.unlinkSync(file))
       } else {
          if (/image\/(jpe?g|png)/.test(mime)) {
             await client.sendPresenceUpdate('composing', jid)
@@ -275,7 +288,7 @@ Socket = (...args) => {
                ...options
             }, {
                quoted
-            })
+            }).then(() => fs.unlinkSync(file))
          } else if (/video/.test(mime)) {
             await client.sendPresenceUpdate('composing', jid)
             return client.sendMessage(jid, {
@@ -288,7 +301,7 @@ Socket = (...args) => {
                ...options
             }, {
                quoted
-            })
+            }).then(() => fs.unlinkSync(file))
          } else if (/audio/.test(mime)) {
             await client.sendPresenceUpdate(opts && opts.ptt ? 'recoding' : 'composing', jid)
             const process = await Func.metaAudio(file, {
@@ -307,7 +320,7 @@ Socket = (...args) => {
                ...options
             }, {
                quoted
-            })
+            }).then(() => fs.unlinkSync(file))
          } else {
             await client.sendPresenceUpdate('composing', jid)
             return client.sendMessage(jid, {
@@ -320,7 +333,7 @@ Socket = (...args) => {
                ...options
             }, {
                quoted
-            })
+            }).then(() => fs.unlinkSync(file))
          }
       }
    }
@@ -456,7 +469,7 @@ Serialize = (client, m) => {
          m.mtype = Object.keys(m.message)[0] == 'senderKeyDistributionMessage' ? Object.keys(m.message)[2] == 'messageContextInfo' ? Object.keys(m.message)[1] : Object.keys(m.message)[2] : Object.keys(m.message)[0] != 'messageContextInfo' ? Object.keys(m.message)[0] : Object.keys(m.message)[1]
          m.msg = m.message[m.mtype]
       }
-      if (m.mtype === 'ephemeralMessage') {
+      if (m.mtype === 'ephemeralMessage' || m.mtype === 'documentWithCaptionMessage') {
          Serialize(client, m.msg)
          m.mtype = m.msg.mtype
          m.msg = m.msg.msg
@@ -469,6 +482,10 @@ Serialize = (client, m) => {
          if (['productMessage'].includes(type)) {
             type = Object.keys(m.quoted)[0]
             m.quoted = m.quoted[type]
+         }
+         if (['documentWithCaptionMessage'].includes(type)) {
+           type = Object.keys(m.quoted.message)[0]
+           m.quoted = m.quoted.message[type]
          }
          if (typeof m.quoted === 'string') m.quoted = {
             text: m.quoted

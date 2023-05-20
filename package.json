@@ -1,7 +1,7 @@
 {
-  "name": "@neoxr/neoxr-js",
-  "version": "1.4.8",
-  "description": "All class functions for neoxr-bot",
+  "name": "@hanbotz/hanborz-js",
+  "version": "1.5.2",
+  "description": "All class functions for HanBotz",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -36,6 +36,6 @@
       "syntax-error":"~1.4.0",
       "util":"~0.12.4"
    },
-  "author": "Wildan Izzudin",
+  "author": "Hans",
   "license": "ISC"
 }

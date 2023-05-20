@@ -3,7 +3,7 @@ const cheerio = require('cheerio')
 const fetch = require('node-fetch')
 const FormData = require('form-data')
 const { fromBuffer } = require('file-type')
-global.creator = `@neoxr.js – Wildan Izzudin`
+global.creator = `@hanbotz - hans`
 
 module.exports = class Scraper {
    /* Chat AI
@@ -135,9 +135,7 @@ module.exports = class Scraper {
             const image = Buffer.isBuffer(str) ? str : str.startsWith('http') ? await (await axios.get(str, {
                responseType: 'arraybuffer'
             })).data : str
-            const {
-               ext
-            } = await fromBuffer(image)
+            const { ext } = await fromBuffer(image)
             let form = new FormData
             form.append('file', Buffer.from(image), 'image.' + ext)
             const json = await (await axios.post('https://telegra.ph/upload', form, {
@@ -179,18 +177,19 @@ module.exports = class Scraper {
       })
    }
 
-   /* Image Uploader V2 (srv.neoxr.tk) [Temp]
+   /* Image Uploader V2 (707a8191-3fe9-4568-a03e-763edd45f0bb.id.repl.co) [Temp]
     * @param {Buffer} buffer
     */
    uploadImageV2 = (buffer) => {
       return new Promise(async (resolve, reject) => {
          try {
+            const server = await (await axios.get('https://neoxr.my.id/srv')).data
             const {
                ext
             } = await fromBuffer(buffer)
             let form = new FormData
             form.append('someFiles', buffer, 'tmp.' + ext)
-            let json = await (await fetch(`https://srv.neoxr.tk/api/upload`, {
+            let json = await (await fetch(server.api_path, {
                method: 'POST',
                body: form
             })).json()
@@ -206,18 +205,19 @@ module.exports = class Scraper {
       })
    }
 
-   /* File Uploader (srv.neoxr.tk) [Permanent]
+   /* File Uploader (707a8191-3fe9-4568-a03e-763edd45f0bb.id.repl.co) [Permanent]
     * @param {Buffer} buffer
     */
    uploadFile = (buffer) => {
       return new Promise(async (resolve, reject) => {
          try {
+            const server = await (await axios.get('https://neoxr.my.id/srv')).data
             const {
                ext
             } = await fromBuffer(buffer)
             let form = new FormData
             form.append('someFiles', buffer, 'file.' + ext)
-            let json = await (await fetch(`https://srv.neoxr.tk/v2/upload`, {
+            let json = await (await fetch(server.api_path, {
                method: 'POST',
                body: form
             })).json()
