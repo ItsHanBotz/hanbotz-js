@@ -281,28 +281,29 @@ module.exports = class Function {
       let output;
 
       if (dotCount === 1) {
-         output = str.replace('.', '') + 'K';
-      } else if (dotCount === 2) {
-         output = str.replace('.', '') + 'M';
-      } else if (dotCount === 3) {
-         output = str.replace('.', '') + 'B';
-      } else if (dotCount === 4) {
-         output = str.replace('.', '') + 'T';
-      } else if (dotCount === 5) {
-         output = str.replace('.', '') + 'Qa';
-      } else if (dotCount === 6) {
-         output = str.replace('.', '') + 'Qi';
-      } else if (dotCount === 7) {
-         output = str.replace('.', '') + 'Sx';
-      } else if (dotCount === 8) {
-         output = str.replace('.', '') + 'Sp';
-      } else if (dotCount === 9) {
-         output = str.replace('.', '') + 'Oc';
-      } else if (dotCount === 10) {
-         output = str.replace('.', '') + 'No';
-      } else {
-         output = str;
-      }
+   output = str.replace('.', '') + 'Ribu';
+} else if (dotCount === 2) {
+   output = str.replace('.', '') + 'Juta';
+} else if (dotCount === 3) {
+   output = str.replace('.', '') + 'Miliar';
+} else if (dotCount === 4) {
+   output = str.replace('.', '') + 'Triliun';
+} else if (dotCount === 5) {
+   output = str.replace('.', '') + 'Quadriliun';
+} else if (dotCount === 6) {
+   output = str.replace('.', '') + 'Quintiliun';
+} else if (dotCount === 7) {
+   output = str.replace('.', '') + 'Sekstiliun';
+} else if (dotCount === 8) {
+   output = str.replace('.', '') + 'Septiliun';
+} else if (dotCount === 9) {
+   output = str.replace('.', '') + 'Oktiliun';
+} else if (dotCount === 10) {
+   output = str.replace('.', '') + 'Noniliun';
+} else {
+   output = str;
+}
+
 
       return output;
    } catch (error) {
@@ -320,11 +321,12 @@ module.exports = class Function {
     * @param {Integer} integer
     */
    h2k = (integer) => {
-      let numb = parseInt(integer)
-      return new Intl.NumberFormat('en-US', {
-         notation: 'compact'
-      }).format(numb)
-   }
+   let numb = parseInt(integer);
+   return new Intl.NumberFormat('id-ID', {
+      notation: 'compact'
+   }).format(numb);
+}
+
 
    /* To Readable Size
     * @param {Integer} size
